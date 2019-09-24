@@ -2,6 +2,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def sgn(y):
+    y[y > 0] = 1
+    y[y < 0] = -1
+    return y
+
 class Perceptron(object):
     '''单层感知机
     '''
@@ -9,32 +14,32 @@ class Perceptron(object):
         super(Perceptron, self).__init__()
 
         self.w = np.ones(shape)      #weigth
-        self.b = 0.3                                 #the bias
+        self.b = 1.5                                 #the bias
+        self.activate_func = sgn
 
     def update(self,x,y,out,learning_rate):
         self.w += learning_rate * x.T * (y - out)
 
     def calclate(self, x):
-        return np.dot(self.w, x.T) + self.b
+        return self.activate_func(np.dot(self.w, x.T) + self.b)
 
-    def mse(self, pre_y, gt_y):
-        return np.sqrt(pre_y ** 2 - gt_y ** 2)
+    def loss_func(self, pre_y, gt_y):
+        return (pre_y - gt_y) ** 2
 
     def train(self, x, y, epochs, learning_rate):
         losses = []
         for epoch in range(epochs):
+            loss_tmp = []
             for i in range(x.shape[0]):
                 out = self.calclate(x[i])
-                loss = self.mse(out, y[i])
+                loss_tmp.append(self.loss_func(out, y[i]))
                 self.update(x[i], y[i], out, learning_rate)
-                losses.append(loss)
 
+            losses.append(sum(loss_tmp)/len(loss_tmp))
         return losses
 
     def predict(self, x):
         out = self.calclate(x)
-        out[out > 0] = 1
-        out[out <= 0] = -1
         return out
     
     def test(self, x,y):
@@ -125,4 +130,4 @@ if __name__ == '__main__':
     plt.plot(divid_x, divid_y, c='r')
     plt.scatter(neg_x_axis,neg_y_axis,c="b",s=10)
     plt.scatter(pos_x_axis,pos_y_axis,c="g",s=10)
-    plt.savefig('../imgs/%s_divide_b_1.png' % desc)   #保存决策面
+    plt.savefig('../imgs/%s_divide.png' % desc)   #保存决策面

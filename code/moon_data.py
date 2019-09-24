@@ -47,7 +47,7 @@ def halfmoon_shuffle(rad, width, d, n_samp):
  
 if __name__ == "__main__":
     dataNum = 1000
-    data = halfmoon(10,5,-2,dataNum)
+    data = halfmoon(10,5,-4,dataNum)
     pos_data = data[:,0: int(dataNum/2)]
     neg_data = data[:, int(dataNum/2):dataNum]
     
